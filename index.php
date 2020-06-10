@@ -33,18 +33,12 @@
 
         // ファイル読み込み
         function filerelod(){
-            // $fp = fopen( "date.txt", "r" );
-            // while( $value = fgets( $fp )){
-            //     echo "$value<br>";
-            // }
-            // fclose( $fp );
             echo file_get_contents( "date.txt" );
         }
 
         // 投稿ボタンイベント
-        date_default_timezone_set('Asia/Tokyo');
-        
         if( isset( $_POST['entry'] )){
+            date_default_timezone_set('Asia/Tokyo');
             $value = '<hr>'.'投稿日時:'.date("Y/m/d H:i:s").'<br>'.'投稿者:'.$_POST['name'].'<br>'.'内容:'.'<br>'.$_POST['message'];
 
             filecreate();
