@@ -54,7 +54,6 @@ function writeData() {
             print('ファイルロックに失敗しました');
         }
     }
-    
 
     fclose($fp);
 
