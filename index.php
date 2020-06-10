@@ -42,6 +42,7 @@
         }
 
         // 投稿ボタンイベント
+        date_default_timezone_set('Asia/Tokyo');
         if( isset( $_POST['entry'] )){
             $value = '<hr>'.'投稿日時:'.date("Y/m/d H:i:s").'<br>'.'投稿者:'.$_POST['name'].'<br>'.'内容:'.'<br>'.$_POST['message'];
 
