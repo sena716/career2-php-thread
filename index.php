@@ -6,6 +6,9 @@
     <title>sns</title>
 </head>
 <body>
+
+    <style></style>
+
     <h1>掲示板App</h1>
     <h2>投稿フォーム</h2>
 
@@ -24,16 +27,31 @@
     <h2>スレッド</h2>
 
     <?php
-        // date.txtを作成
+
+        // 保存file名
+        const FILE_NAME = "date.txt";
+
+        // date.txtがなければ作成
         function filecreate(){
-            if( !file_exists('date.txt')){
-                touch( 'date.txt' );
+            if( !file_exists( FILE_NAME )){
+                touch( FILE_NAME );
             }
         }
 
         // ファイル読み込み
         function filerelod(){
-            echo file_get_contents( "date.txt" );
+            echo file_get_contents( FILE_NAME );
+        }
+
+        // ファイル変更
+        function fileAction( $value ){
+            if( isset( $value )){
+                $fp = fopen( FILE_NAME, "a" );
+                fwrite( $fp, $value );
+                fclose( $fp );
+            } else {
+                file_put_contents( FILE_NAME, "" );
+            }
         }
 
         // 投稿ボタンイベント
@@ -42,17 +60,13 @@
             $value = '<hr>'.'投稿日時:'.date("Y/m/d H:i:s").'<br>'.'投稿者:'.$_POST['name'].'<br>'.'内容:'.'<br>'.$_POST['message'];
 
             filecreate();
-            $fp = fopen( "data.txt", "ab" );
-            fwrite( $fp, $value );
-            // file_put_contents( "date.txt", $value );
-            filerelod();
-
+            fileAction( $value );
         } else if( isset( $_POST['remove'] )){
 
-            $fp = fopen( "date.txt", "w" );
-            fclose( $fp );
-            filerelod();
+            fileAction();
         }
+
+        filerelod();
     ?>
 
 </body>
