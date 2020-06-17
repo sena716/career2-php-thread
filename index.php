@@ -42,7 +42,9 @@
             $value = '<hr>'.'投稿日時:'.date("Y/m/d H:i:s").'<br>'.'投稿者:'.$_POST['name'].'<br>'.'内容:'.'<br>'.$_POST['message'];
 
             filecreate();
-            file_put_contents( "date.txt", $value );
+            $fp = fopen( "data.txt", "ab" );
+            fwrite( $fp, $value );
+            // file_put_contents( "date.txt", $value );
             filerelod();
 
         } else if( isset( $_POST['remove'] )){
