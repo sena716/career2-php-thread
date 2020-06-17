@@ -17,7 +17,7 @@
     </form>
 
     <form action="" method="post">
-        <input type="submit" value="削除する" name="remove">
+        <input type="submit" value="削除する" name="remove" class="button">
     </form>
 
     <h2>スレッド</h2>
