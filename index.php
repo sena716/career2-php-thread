@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/bootstrap.css">
     <title>sns</title>
 </head>
 <body>
@@ -37,7 +38,7 @@
             echo file_get_contents( FILE_NAME );
         }
 
-        // ファイル変更
+        // ファイル書き込み　リセット
         function fileAction( $value ){
             if( isset( $value )){
                 $fp = fopen( FILE_NAME, "a" );
@@ -68,5 +69,7 @@
         filerelod();
     ?>
 
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/bootstrap.bundle.js"></script>
 </body>
 </html>
