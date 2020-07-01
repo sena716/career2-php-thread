@@ -1,75 +1,104 @@
-<!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <title>sns</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <title>掲示板App</title>
 </head>
 <body>
-    <h1>掲示板App</h1>
-    <h2>投稿フォーム</h2>
 
-    <form action="" method="post">
-        <input type="text" name="name" placeholder="名前" required><br><br>
-        <textarea name="message" id="" cols="30" rows="10" placeholder="内容" required></textarea><br><br>
-        <input type="submit" value="投稿する" name="entry">
-    </form>
+<div class="container">
+    <div class="col-md-8">
+        <h1 class="text-center text-primary py-3">掲示板App</h1>
+        
+        <h2 class="text-muted py-3">投稿フォーム</h2>
 
-    <form action="" method="post">
-        <input type="submit" value="削除する" name="remove" class="button">
-    </form>
+<form method="POST" action="<?php print($_SERVER['PHP_SELF']) ?>">
+    <input type="text" class="form-control" name="personal_name" placeholder="名前" required><br><br>
+    <textarea name="contents" class="form-control" rows="8" cols="40" placeholder="内容" required></textarea><br><br>
+    <input class="btn btn-primary"  type="submit" name="btn" value="投稿する">
+</form>
 
-    <h2>スレッド</h2>
+<h2 class="text-muted py-3">スレッド</h2>
 
-    <?php
-        // 保存file名
-        const FILE_NAME = "date.txt";
+<form method="POST" action="<?php print($_SERVER['PHP_SELF']) ?>">
+    <input type="hidden" name="method" value="DELETE">
+    <button class="btn btn-danger" type="submit">投稿を全削除する</button>
+</form>
 
-        // date.txtがなければ作成
-        function filecreate(){
-            if( !file_exists( FILE_NAME )){
-                touch( FILE_NAME );
+<?php
+
+date_default_timezone_set('Asia/Tokyo');
+const THREAD_FILE = 'thread.txt';
+
+function readData() {
+    // ファイルが存在しなければデフォルト空文字のファイルを作成する
+    if (! file_exists(THREAD_FILE)) {
+        $fp = fopen(THREAD_FILE, 'w');
+        fwrite($fp, '');
+        fclose($fp);
+    }
+
+    $thread_text = file_get_contents(THREAD_FILE);
+    echo $thread_text;
+}
+
+function writeData() {
+    $personal_name = $_POST['personal_name'];
+    $contents = $_POST['contents'];
+    $contents = nl2br($contents);
+
+    $data = "<hr>\n";
+    $data = $data."<p>投稿日時: ".date("Y/m/d H:i:s")."</p>\n";
+    $data = $data."<p>投稿者:".$personal_name."</p>\n";
+    $data = $data."<p>内容:</p>\n";
+    $data = $data."<p>".$contents."</p>\n";
+
+    $fp = fopen(THREAD_FILE, 'a');
+    
+
+    if ($fp){
+        if (flock($fp, LOCK_EX)){
+            if (fwrite($fp,  $data) === FALSE){
+                print('ファイル書き込みに失敗しました');
             }
+
+            flock($fp, LOCK_UN);
+        }else{
+            print('ファイルロックに失敗しました');
         }
+    }
 
-        // ファイル読み込み
-        function filerelod(){
-            echo file_get_contents( FILE_NAME );
-        }
+    fclose($fp);
+}
 
-        // ファイル書き込み　リセット
-        function fileAction( $value ){
-            if( isset( $value )){
-                $fp = fopen( FILE_NAME, "a" );
-                fwrite( $fp, $value );
-                fclose( $fp );
+function deleteData() {
+    file_put_contents(THREAD_FILE, "");
+}
 
-                $redirect_url = $_SERVER['HTTP_REFERER'];
-                header("Location: $redirect_url");
-                exit;
-            } else {
-                file_put_contents( FILE_NAME, "" );
-            }
-        }
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    if (isset($_POST["method"]) && $_POST["method"] === "DELETE") {
+        deleteData();
+    } else {
+        writeData();
+    }
+    
+    // ブラウザのリロード対策
+    $redirect_url = $_SERVER['HTTP_REFERER'];
+    header("Location: $redirect_url");
+    exit;
+}
 
-        // 投稿ボタンイベント
-        if( isset( $_POST['entry'] )){
+readData();
 
-            date_default_timezone_set('Asia/Tokyo');
-            $value = '<hr>'.'投稿日時:'.date("Y/m/d H:i:s").'<br>'.'投稿者:'.$_POST['name'].'<br>'.'内容:'.'<br>'.$_POST['message'];
+?>
 
-            filecreate();
-            fileAction( $value );
+    </div>
+</div>
 
-        } else if( isset( $_POST['remove'] )){
-            fileAction();
-        }
-
-        filerelod();
-    ?>
-
-
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<!-- JS, Popper.js, and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
 </body>
 </html>
