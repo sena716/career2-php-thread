@@ -4,6 +4,7 @@
  * 職業実践2 - 掲示板アプリ
  */
 
+ 
 require_once './thread.php';
 $thread = new Thread("掲示板App");
 
